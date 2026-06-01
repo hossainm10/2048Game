@@ -4,7 +4,7 @@
 #include <iterator>
 #include <vector>
 #include <algorithm>
-
+#include <utility>
 void Game::spawnTile(){
     std::vector<std::pair<int,int>> empty_;
     for (int i=0;i<4;++i){
@@ -67,18 +67,55 @@ bool Game::move(Direction dir){
     switch(dir){
         case Direction::LEFT:
             for(int i=0;i<4;++i){
-                slideRow(board[i]);
+                changed |= slideRow(board[i]);
             }
             break;
         case  Direction::RIGHT:
-            for(int i=0;i<4;i++){
+            for(int i=0;i<4;++i){
                 std::reverse(board[i],board[i]+4);
-                slideRow(board[i]);
+                changed |= slideRow(board[i]);
                 std::reverse(board[i],board[i]+4);
             }
+            break;
+        case Direction::UP:
+            for(int i=0;i<4;++i){
+                for(int j=i+1; j<4;++j){
+                    std::swap(board[i][j],board[j][i]);
+
+                }
+            }
+            for(int i=0;i<4;++i) changed |= slideRow(board[i]);
+
+            for(int i=0;i<4;++i){
+                for(int j=i+1;j<4;++j){
+                    std::swap(board[i][j],board[j][i]);
+                }
+            }
+            break;
+        case Direction::DOWN:
+            for(int i=0;i<4;++i){
+                for(int j=i+1;j<4;++j){
+                    std::swap(board[i][j],board[j][i]);
+                }
+            }
+            for(int i=0;i<4;++i) std::reverse(board[i],board[i]+4);
+
+            for(int i=0; i<4;++i) changed|=slideRow(board[i]);
+
+            for(int i=0;i<4;++i) std::reverse(board[i],board[i]+4);
+
+            for(int i=0;i<4;++i){
+                for (int j=i+1; j<4;++j){
+                    std::swap(board[i][j],board[j][i]);
+                }
+            }
+            break;
 
 
     }
+    if (changed) spawnTile();
+
+    return changed;
 
 }
 Game::Game(){
@@ -86,3 +123,32 @@ Game::Game(){
     reset();
 
 }
+
+int Game::getScore() const{
+    return score;
+}
+const int* Game::getBoard() const{
+    return &board[0][0];
+}
+
+bool Game::hasWon() const{
+    bool won=false;
+    for(int i=0; i<4;++i){
+        for(int j=0;j<4;++j){
+            if(board[i][j]==2048) won = true;
+        }
+    }
+    return won;
+}
+
+    bool Game::isOver() const{
+        for(int i=0;i<4;++i){
+            for(int j=0;j<4;++j){
+                if(board[i][j]==0 && j+1 <4 ) return false;
+                if(board[i][j]==board[i][j+1 && j+1<4]) return false;
+            }
+        }
+        return true;
+
+
+    }
