@@ -8,7 +8,7 @@ class Renderer{
         ~Renderer();
 
         void draw(const Game& game);
-        void drawBoard(const int board[4][4]);
+        void drawBoard(const int* board);
         void drawTile(int value, int x, int y);
         void drawScore(int score);
         void drawGameOver();
