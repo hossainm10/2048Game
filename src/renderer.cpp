@@ -2,18 +2,28 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <string>
-#include "Game.h"
-
+#include "game.h"
+#include <iostream>
 const int TILE_SIZE=100;
 const int TILE_PADDING=10;
 const int BOARD_OFFSET=20;
 
 Renderer::Renderer(int windowW,int windowH){
     SDL_Init(SDL_INIT_VIDEO);
-    window=SDL_CreateWindow("Game",SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,windowW,windowH,0);
+    window=SDL_CreateWindow("2048Game",SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,windowW,windowH,0);
+    if(!window){
+        std::cerr<<"Window Creation Failed with Error: "<<SDL_GetError()<<std::endl;
+        SDL_Quit();
+    }
+
     renderer=SDL_CreateRenderer(window,-1,SDL_RENDERER_ACCELERATED);
+    if(!renderer){
+        std::cerr<<"Renderer Creation Failed with Error: "<<SDL_GetError()<<std::endl;
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+    }
     TTF_Init();
-    font=TTF_OpenFont("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 24.0)
+    font=TTF_OpenFont("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 24.0);
 }
 
 Renderer::~Renderer(){
@@ -38,11 +48,10 @@ SDL_Color Renderer::tileColor(int value){
         case 512: return {184,134,11,255};
         case 1024: return {210,105,30,255};
         case 2048: return {220,20,60,255};
-        case default: return {128,128,128,255};
+        default: return {128,128,128,255};
     }
 }
 void Renderer::drawTile(int value, int x, int y){
-
     SDL_Color color =tileColor(value);
     SDL_Rect rect= {x,y,TILE_SIZE,TILE_SIZE};
     SDL_SetRenderDrawColor(renderer,color.r,color.g,color.b,color.a);
@@ -50,11 +59,12 @@ void Renderer::drawTile(int value, int x, int y){
     if(value !=0){
         std::string string_value= std::to_string(value);
         SDL_Color textColor={255,255,255,255};
-        SDL_Surface* surface =TTF_RenderText_Solid(font, string_value,textColor);
+        SDL_Surface* surface =TTF_RenderText_Solid(font, string_value.c_str(),textColor);
         SDL_Texture* texture= SDL_CreateTextureFromSurface(renderer,surface);
-        SDL_RenderCopy(render,texture,nullptr,&rect);
+        SDL_RenderCopy(renderer,texture,nullptr,&rect);
         SDL_FreeSurface(surface);
         SDL_DestroyTexture(texture);
+    }
 
 }
 void Renderer::drawBoard(const int* board){
@@ -82,7 +92,7 @@ void Renderer::drawGameOver(){
 
     std::string text= "Game Over! Thanks for playing.";
     SDL_Color textColor={255,255,255,255};
-    SDL_Rect rect={10,0,200,40};
+    SDL_Rect rect={150,300,300,60};
     SDL_Surface* surface=TTF_RenderText_Solid(font,text.c_str(),textColor);
     SDL_Texture* texture= SDL_CreateTextureFromSurface(renderer,surface);
     SDL_RenderCopy(renderer,texture,nullptr,&rect);
@@ -92,12 +102,13 @@ void Renderer::drawGameOver(){
 }
 void Renderer::draw(const Game& game){
     SDL_SetRenderDrawColor(renderer,135,206,235,235);
-    drawBoard(game.getBoard);
-    drawScore(game.getScore);
-    if(game.hasWon==2048 || game.isOver()) drawGameOver()
+    SDL_RenderClear(renderer);
+    drawBoard(game.getBoard());
+    drawScore(game.getScore());
+    if(game.hasWon()|| game.isOver()) drawGameOver();
 }
 
 void Renderer::present(){
-    SDL_RendererPresent(renderer);
+    SDL_RenderPresent(renderer);
 
 }
