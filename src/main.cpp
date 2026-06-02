@@ -13,7 +13,7 @@ int main(){
         return -1;
     }
 
-    Renderer game_renderer(SCREEN_HEIGHT,SCREEN_HEIGHT);
+    Renderer game_renderer(SCREEN_WIDTH,SCREEN_HEIGHT);
     Game  game;
     bool isRunning=true;
     SDL_Event event;
@@ -23,12 +23,16 @@ int main(){
         while(SDL_PollEvent(&event)){
             if(event.type ==SDL_QUIT) isRunning=false;
             if(event.type ==SDL_KEYDOWN){
-                switch(event.key.keysym.sym){
-                    case SDLK_LEFT: game.move(Direction::LEFT); break;
-                    case SDLK_RIGHT: game.move(Direction::RIGHT); break;
-                    case SDLK_UP: game.move(Direction::UP); break;
-                    case SDLK_DOWN: game.move(Direction::DOWN); break;
-                    case SDLK_r: game.reset(); break;
+                if(game.isOver() || game.hasWon()){
+                    if(event.key.keysym.sym ==SDLK_r) game.reset();
+                }else{
+                    switch(event.key.keysym.sym){
+                        case SDLK_LEFT: game.move(Direction::LEFT); break;
+                        case SDLK_RIGHT: game.move(Direction::RIGHT); break;
+                        case SDLK_UP: game.move(Direction::UP); break;
+                        case SDLK_DOWN: game.move(Direction::DOWN); break;
+                        case SDLK_r: game.reset(); break;
+                    }
                 }
             }
         }

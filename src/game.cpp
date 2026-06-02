@@ -144,11 +144,10 @@ bool Game::hasWon() const{
 bool Game::isOver() const{
     for(int i=0;i<4;++i){
         for(int j=0;j<4;++j){
-            if(board[i][j]==0 && j+1 <4 ) return false;
-            if(board[i][j]==board[i][j+1 && j+1<4]) return false;
+            if(board[i][j] == 0) return false;
+            if(j+1<4 && board[i][j]== board[i][j+1]) return false;
+            if(j+1<4 && board[i][j]==board[i+1][j]) return false;
         }
     }
     return true;
-
-
-    }
+}

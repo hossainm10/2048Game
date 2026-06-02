@@ -13,3 +13,4 @@ add_executable(game_2048
     src/game.cpp)
 target_include_directories(game_2048 PRIVATE include/ ${SDL2_INCLUDE_DIRS})
 target_link_libraries(game_2048 PRIVATE ${SDL2_LIBRARIES} SDL2_ttf)
+set_target_properties(game_2048 PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})

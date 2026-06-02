@@ -92,7 +92,7 @@ void Renderer::drawGameOver(){
 
     std::string text= "Game Over! Thanks for playing.";
     SDL_Color textColor={255,255,255,255};
-    SDL_Rect rect={150,300,300,60};
+    SDL_Rect rect={200,500,300,60};
     SDL_Surface* surface=TTF_RenderText_Solid(font,text.c_str(),textColor);
     SDL_Texture* texture= SDL_CreateTextureFromSurface(renderer,surface);
     SDL_RenderCopy(renderer,texture,nullptr,&rect);
